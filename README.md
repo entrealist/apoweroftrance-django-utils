@@ -1,0 +1,1 @@
+# apoweroftrance-django-utils

@@ -101,8 +101,11 @@ def request_async_threaded(method, url, callback=None, data=None):
         asyncio.run(asyncio.wait(tasks))
     else:
         futures = [request_async(method, url, callback, data)]
-        loop = asyncio.get_event_loop()
+        # loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         loop.run_until_complete(asyncio.wait(futures))
+        loop.close()
 
 
 class UpdatePUTAPIView(mixins.UpdateModelMixin, generics.GenericAPIView):

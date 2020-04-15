@@ -1,3 +1,8 @@
+import sys
+import json
+import asyncio
+import aiohttp
+from urllib.parse import urlencode
 from django.http import HttpResponseRedirect, HttpResponse
 from rest_framework import mixins, generics
 from rest_framework.response import Response
@@ -16,6 +21,13 @@ def response_json(payload, status=None):
     data = {"payload": payload}
 
     response = Response(data, headers=header, status=status)
+    return response
+
+
+def response_json_payload(payload, status=None):
+    header = {"Server": "server"}
+
+    response = Response(payload, headers=header, status=status)
     return response
 
 
@@ -40,6 +52,57 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+def method_permission_classes(classes):
+    def decorator(func):
+        def decorated_func(self, *args, **kwargs):
+            self.permission_classes = classes
+            # this call is needed for request permissions
+            self.check_permissions(self.request)
+            return func(self, *args, **kwargs)
+        return decorated_func
+    return decorator
+
+
+def shift(lst):
+    tmp = lst[0]
+
+    for i in range(1, len(lst)):
+        lst[i-1] = lst[i]
+
+    lst[len(lst) - 1] = tmp
+
+
+async def request_async(method, url, callback=None, data=None):
+    headers = {'content-type': 'application/json'}
+    request_data = json.dumps(data)
+    async with aiohttp.ClientSession() as session:
+        if method == "GET":
+            if data is not None:
+                query_string = urlencode(request_data)
+                request_url = "{0}?{1}".format(url, query_string)
+            else:
+                request_url = url
+            async with session.get(request_url, headers=headers) as resp:
+                response = await resp.read()
+                if callback is not None:
+                    callback(response)
+        elif method == "POST":
+            async with session.post(url, data=request_data, headers=headers) as resp:
+                response = await resp.read()
+                if callback is not None:
+                    callback(response)
+
+
+def request_async_threaded(method, url, callback=None, data=None):
+    if sys.version_info >= (3, 7):
+        tasks = [request_async(method, url, callback, data)]
+        asyncio.run(asyncio.wait(tasks))
+    else:
+        futures = [request_async(method, url, callback, data)]
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.wait(futures))
 
 
 class UpdatePUTAPIView(mixins.UpdateModelMixin, generics.GenericAPIView):

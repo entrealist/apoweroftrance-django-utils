@@ -29,6 +29,7 @@ def upload_file(request, filefield, target_path, driver, valid_mimetype):
     filepath = []
     for f in request.FILES.getlist(filefield):
         filename = f.name
+        content_type = f.content_type
         filebody = f
 
         extension = get_extension(filename)
@@ -37,18 +38,15 @@ def upload_file(request, filefield, target_path, driver, valid_mimetype):
         uid = str(uuid.uuid1())
         uniquename = uid.replace('-', '') + "." + extension
 
-        data = filebody.read()
-        info = fleep.get(data)
-
         is_valid = False
         for mimetype in valid_mimetype:
-            if info.mime_matches(mimetype):
+            if mimetype == content_type:
                 is_valid = True
 
         if is_valid is False:
             raise ValidationError(_('Not a Invalid format'))
 
-        remote_file_path = driver.upload_data(data, target_path, uniquename, filebody.content_type, filebody.size)
+        remote_file_path = driver.upload_data(f, target_path, uniquename, filebody.content_type, filebody.size)
 
         if remote_file_path is not None:
             filepath.append(remote_file_path)
@@ -72,6 +70,7 @@ def upload_file_direct(f, target_path, driver, valid_mimetype):
         from .storage_driver import s3 as driver
 
     filename = f.name
+    content_type = f.content_type
     filebody = f
 
     extension = get_extension(filename)
@@ -80,18 +79,15 @@ def upload_file_direct(f, target_path, driver, valid_mimetype):
     uid = str(uuid.uuid1())
     uniquename = uid.replace('-', '') + "." + extension
 
-    data = filebody.read()
-    info = fleep.get(data)
-
     is_valid = False
     for mimetype in valid_mimetype:
-        if info.mime_matches(mimetype):
+        if mimetype == content_type:
             is_valid = True
 
     if is_valid is False:
         raise ValidationError(_('Not a Invalid format'))
 
-    remote_file_path = driver.upload_data(data, target_path, uniquename, filebody.content_type, filebody.size)
+    remote_file_path = driver.upload_data(f, target_path, uniquename, filebody.content_type, filebody.size)
 
     return remote_file_path
 

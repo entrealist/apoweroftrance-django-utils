@@ -113,7 +113,7 @@ def upload_data(data, remote_path, remote_file_name, mimetype, filesize):
     remote_file_path = '%s/%s' % (remote_path, remote_file_name)
 
     with GCSObjectStreamUpload(client=client, bucket_name=bucket_name, blob_name=remote_file_path, mimetype=mimetype) as s:
-        s.write(data)
+        s.write(data.read())
 
     return remote_file_path
 

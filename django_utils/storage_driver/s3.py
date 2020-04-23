@@ -28,7 +28,7 @@ def upload_data(data, remote_path, remote_file_name, mimetype, filesize):
     remote_file_path = '%s/%s/%s' % (location, remote_path, remote_file_name)
     try:
         s3.put_object(
-            Body=data,
+            Body=data.read(),
             ContentLength=filesize,
             Bucket=bucket,
             Key=remote_file_path,

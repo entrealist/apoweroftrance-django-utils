@@ -9,18 +9,22 @@ from django.conf import settings
 
 project_id = settings.GCP_PROJECT_ID
 bucket_name = settings.GCP_STORAGE_BUCKET_NAME
+service_account_json = settings.GCP_SERVICE_ACCOUNT_JSON
 
-try:
-    # Try local development environment
-    credentials, project_id = google.auth.default()
-except:
-    # Try production environment
+if not settings.GCP_USE_SERVICE_ACCOUNT_JSON:
     try:
-        credentials = compute_engine.Credentials()
+        # Try local development environment
+        credentials, project_id = google.auth.default()
     except:
-        credentials = app_engine.Credentials()
+        # Try production environment
+        try:
+            credentials = compute_engine.Credentials()
+        except:
+            credentials = app_engine.Credentials()
 
-client = storage.Client(credentials=credentials, project=project_id)
+    client = storage.Client(credentials=credentials, project=project_id)
+else:
+    client = storage.Client.from_service_account_json(service_account_json)
 bucket = client.get_bucket(bucket_name)
 
 

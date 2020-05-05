@@ -9,4 +9,3 @@ cp ${SCRIPTDIR}/django-utils/dist/apoweroftrance-django-utils-${VERSION}.tar.gz 
 cp ${SCRIPTDIR}/django-utils/dist/apoweroftrance-django-utils-${VERSION}.tar.gz ${SCRIPTDIR}/account/
 #python3 -m pip install ${SCRIPTDIR}/radio/apoweroftrance-django-utils-${VERSION}.tar.gz
 #python3 -m pip install ${SCRIPTDIR}/account/apoweroftrance-django-utils-${VERSION}.tar.gz
-

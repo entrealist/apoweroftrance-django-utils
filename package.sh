@@ -8,6 +8,7 @@ python3 setup.py sdist bdist_wheel
 cp ${SCRIPTDIR}/django-utils/dist/apoweroftrance-django-utils-${VERSION}.tar.gz ${SCRIPTDIR}/radio/
 cp ${SCRIPTDIR}/django-utils/dist/apoweroftrance-django-utils-${VERSION}.tar.gz ${SCRIPTDIR}/account/
 cp ${SCRIPTDIR}/django-utils/dist/apoweroftrance-django-utils-${VERSION}.tar.gz ${SCRIPTDIR}/upload/
+cp ${SCRIPTDIR}/django-utils/dist/apoweroftrance-django-utils-${VERSION}.tar.gz ${SCRIPTDIR}/../cms/
 #python3 -m pip install ${SCRIPTDIR}/radio/apoweroftrance-django-utils-${VERSION}.tar.gz
 #python3 -m pip install ${SCRIPTDIR}/account/apoweroftrance-django-utils-${VERSION}.tar.gz
 #python3 -m pip install ${SCRIPTDIR}/upload/apoweroftrance-django-utils-${VERSION}.tar.gz
